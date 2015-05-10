@@ -109,35 +109,37 @@ def yomi_matchreg(kanjistring):
     return matchreg
 
 def canonical_reading(kanji, foundreading):
-    """Returns a 'canonical' reading (from Kanjidic).
+    """From a found reading for a kanji, find its canonical form and type.
 
     E.g.:
         >>> canonical_reading('花', 'ばな')
-        'はな'
+        ('はな', 'Kun')
     """
-    creadings = []
+
+
     if kanji in ONYOMI.keys():
-        creadings += ONYOMI[kanji]
+        for creading in ONYOMI[kanji]:
+            if japanese_match(creading, foundreading):
+                return(creading, 'On')
     if kanji in KUNYOMI.keys():
-        creadings += KUNYOMI[kanji]
-    for creading in creadings:
-        if japanese_match(creading, foundreading):
-            return(creading)
+        print(kanji)
+        for creading in KUNYOMI[kanji]:
+            print(creading, foundreading)
+            if japanese_match(creading, foundreading):
+                return(creading, 'Kun')
+    else:
+        raise(ValueError("Kanji not found: %s" % kanji))
+
+    raise(ValueError("Reading '%s' not found for kanji %s" %
+                     (foundreading, kanji))) 
+
 
 def yomidict(kanji, reading):
     m = re.match(yomi_matchreg(kanji), reading)
     if (not m):
-        raise(ValueError("Could not find reading '%s' for kanji '%s'" %
+        raise(ValueError("Reading '%s' not found for kanji '%s'" %
                          (reading, kanji)))
     return(m.groupdict())
-
-def yomidict_canonical(kanji, reading):
-    d = yomidict(kanji, reading)
-    for kanji, found_reading in d.items():
-        d[kanji] = canonical_reading(kanji, found_reading)
-    return(d)
-
-
 
 def yomisplit(kanjiword, reading):
     pass
