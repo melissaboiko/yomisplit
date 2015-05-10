@@ -23,8 +23,13 @@ class UnknownReading(ValueError):
     def __str__(self):
         return("Reading '%s' for kanji '%s' is not known to library." % (self.reading, self.kanji))
 
-'''Japanese 'voicing' or daku transformations classes, including the /h/ sounds
-(which changes to /b/) and the 'half-daku' (/h/ -> /p/).'''
+"""Equivalence classes of Japanese bound morphemes.
+
+Any way a word may change ortographically at the start.  Include:
+    - sequential "voicing" (rendaku), including /h/ → /b/ (か→が、は→ば);
+    - /h/ → /p/ (handaku) (は→ぱ)
+    - yotsugana homographs: つ → づ → ず, ち → ぢ → じ
+"""
 DAKUON = {
 'か' : '[かが]',
 'き' : '[きぎ]',
@@ -37,8 +42,8 @@ DAKUON = {
 'せ' : '[せぜ]',
 'そ' : '[そぞ]',
 'た' : '[ただ]',
-'ち' : '[ちぢ]',
-'つ' : '[つづ]',
+'ち' : '[ちぢじ]',
+'つ' : '[つづず]',
 'て' : '[てで]',
 'と' : '[とど]',
 'は' : '[はばぱ]',
