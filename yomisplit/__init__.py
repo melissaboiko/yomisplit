@@ -146,8 +146,8 @@ def yomi_matchreg(kanjistring):
             else:
                 raise(ValueError('Repetition character 々 following nothing'))
         else:
-            # assumes character is okurigana; must match as-is
-            reg = ch
+            # assumes character is okurigana or punct; must match as-is
+            reg = re.escape(ch)
             # raise(UnknownKanji(ch))
 
         if ch in count.keys():
