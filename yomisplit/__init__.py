@@ -1,6 +1,8 @@
 '''Given a kanji token and its reading, try to split the reading by kanji.
 
-TODO: suport for Unicode composing.
+TODO:
+    - suport for Unicode composing.
+    - we overshoot a bit; okurigana won't filter for kunyomi (so that e.g. にゅうり will match 入り)
 '''
 
 import re
@@ -97,32 +99,64 @@ def yomi_matchreg(kanjistring):
     """Builds regexp that matches possible known readings of kanjistring.
 
     Use the regexp to match a reading later, in hiragana.  The resulting match
-    will include named groups, one for each kanji.
+    will be separated by match groups, one for each source character.  So, for
+    example, to find which part of the reading correspond to the second
+    character in '断定', see the match_obj.group(2) (or, equivalently,
+    .groups()[1]).
+
+    The groups will also be named, so you can use .groups('定') or
+    .groupdict().  If any character is repeated, the group name will be ch +
+    '2', ch + '3' etc.
+
+    TODO: docs
+
     """
     matchreg = ''
+
+    # used to handle repetition character, '々'
+    prevch = None
+    prevreg = None
+
+    count = {}
+
     for ch in kanjistring:
 
         found = False
-        regs = []
+        yomis = []
 
         if ch in ONYOMI.keys():
             found=True
-            regs += [japanese_matchreg(on) for on in ONYOMI[ch]]
+            yomis += [japanese_matchreg(on) for on in ONYOMI[ch]]
 
         if ch in KUNYOMI.keys():
             found=True
-
-            regs += [japanese_matchreg(kun) for kun in KUNYOMI[ch]]
+            yomis += [japanese_matchreg(kun) for kun in KUNYOMI[ch]]
 
         if found:
-          matchreg += '(?P<%s>' % ch
-          matchreg += '|'.join(regs)
-          matchreg += ')'
+            reg = '|'.join(yomis)
+        elif ch == '々':
+            if prev:
+                reg = prevreg
+            else:
+                raise(ValueError('Repetition character 々 following nothing'))
         else:
             # assumes character is okurigana; must match as-is
-            matchreg += ch
-
+            reg = ch
             # raise(UnknownKanji(ch))
+
+        if ch in count.keys():
+            count[ch] = count[ch] + 1
+            groupname = ch + repr(count[ch])
+        else:
+            count[ch] = 1
+            groupname = ch
+
+        matchreg += '(?P<%s>%s)' % (groupname, reg)
+
+        prev = ch
+        prevreg = reg
+
+    matchreg += '$'
     return matchreg
 
 def canonical_reading(kanji, foundreading):
