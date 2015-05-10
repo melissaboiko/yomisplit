@@ -6,6 +6,7 @@ import jctconv
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 i_class = '[いきしちにひみり]'
+e_class = '[えけせてねへめれ]'
 u_class = '[うくすつぬふむる]'
 u_to_i = {
     'う': 'い',
@@ -52,6 +53,7 @@ for line in kunyomi_tsv:
 
     # 'たべ.る' → 'たべ'
     # 'はな.し' → 'はな', 'はなし' (because of "hidden okurigana")
+    # 'い.きる' → 'い', 'いき'
     # 'はな.す' → 'はな', 'はなし'
     for idx, kun in enumerate(kuns):
         dot = kun.find('.')
@@ -63,8 +65,15 @@ for line in kunyomi_tsv:
             if re.match(i_class, lastchar):
                 kuns.append(kun.replace('.', ''))
             elif re.match(u_class, lastchar):
-                kun = kun[:-1] + u_to_i[lastchar]
-                kuns.append(kun.replace('.', ''))
+                # godan is always a possibility
+                kun2 = kun[:-1] + u_to_i[lastchar]
+                kuns.append(kun2.replace('.', ''))
+
+                # perhaps it may be ichiban?
+                if (kun[-1] == 'る' and
+                    (re.match(e_class, kun[-2]) or re.match(i_class, kun[-2]))):
+                    kun3 = kun[:-1]
+                    kuns.append(kun3.replace('.', ''))
 
     # should we use this information (bound readings) somehow?
     kuns = [kun.replace('-', '') for kun in kuns]
