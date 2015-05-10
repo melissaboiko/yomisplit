@@ -1,4 +1,4 @@
-"""setuptools module for uniscripts.
+"""setuptools module for yomisplit.
 """
 
 # Always prefer setuptools over distutils
@@ -21,7 +21,7 @@ setup(
     name='yomisplit',
 
     # PEP440
-    version='0.0.1',
+    version='0.0.2',
 
     description='Split Japanese kanji string by readings',
     long_description=long_description,
