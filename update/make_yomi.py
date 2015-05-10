@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import re
+import sys
 import jctconv
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -61,6 +62,15 @@ for line in kunyomi_tsv:
             base = kun[0:dot]
             kuns[idx] = base
 
+            # alternative-lenght (old-style) bases that 'hide' more kana
+            # e.g. 挙る is あ.げる
+            # but in 挙句 it's あげ
+            i = -2
+            while kun[i] != '.':
+                base = kun[0:i+1]
+                kuns.append(base.replace('.', ''))
+                i -= 1
+
             lastchar = kun[-1]
             if re.match(i_class, lastchar):
                 kuns.append(kun.replace('.', ''))
@@ -69,11 +79,12 @@ for line in kunyomi_tsv:
                 kun2 = kun[:-1] + u_to_i[lastchar]
                 kuns.append(kun2.replace('.', ''))
 
-                # perhaps it may be ichiban?
+                # perhaps it may be ichidan?
                 if (kun[-1] == 'る' and
                     (re.match(e_class, kun[-2]) or re.match(i_class, kun[-2]))):
                     kun3 = kun[:-1]
                     kuns.append(kun3.replace('.', ''))
+                    # sys.stderr.write(kanji + ": " + kun3 + "\n")
 
     # should we use this information (bound readings) somehow?
     kuns = [kun.replace('-', '') for kun in kuns]
