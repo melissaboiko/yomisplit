@@ -122,9 +122,7 @@ def canonical_reading(kanji, foundreading):
             if japanese_match(creading, foundreading):
                 return(creading, 'On')
     if kanji in KUNYOMI.keys():
-        print(kanji)
         for creading in KUNYOMI[kanji]:
-            print(creading, foundreading)
             if japanese_match(creading, foundreading):
                 return(creading, 'Kun')
     else:
