@@ -19,6 +19,7 @@ for line in onyomi_tsv:
     # should we use this information (bound readings) somehow?
     ons = [on.replace('-', '') for on in ons]
     ons = [on.strip() for on in ons]
+    ons = set(ons)
     onyomis[kanji] = ons
 
 kunyomis = {}
@@ -42,6 +43,7 @@ for line in kunyomi_tsv:
     # should we use this information (bound readings) somehow?
     kuns = [kun.replace('-', '') for kun in kuns]
     kuns = [kun.strip() for kun in kuns]
+    kuns = set(kuns)
     kunyomis[kanji] = kuns
 
 print('ONYOMI = ' + repr(onyomis))
