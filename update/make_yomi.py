@@ -1,8 +1,24 @@
 #!/usr/bin/env python3
 import os
+import re
 import jctconv
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+i_class = '[いきしちにひみり]'
+u_class = '[うくすつぬふむる]'
+u_to_i = {
+    'う': 'い',
+    'く': 'き',
+    'す': 'し',
+    'つ': 'ち',
+    'ぬ': 'に',
+    'ふ': 'ひ',
+    'む': 'み',
+    'る': 'り',
+}
+
+
 
 onyomis = {}
 onyomi_tsv = open('onyomi.tsv', 'r')
@@ -35,10 +51,20 @@ for line in kunyomi_tsv:
     kuns = fields[1].split()
 
     # 'たべ.る' → 'たべ'
+    # 'はな.し' → 'はな', 'はなし' (because of "hidden okurigana")
+    # 'はな.す' → 'はな', 'はなし'
     for idx, kun in enumerate(kuns):
         dot = kun.find('.')
         if dot != -1:
-            kuns[idx] = kun[0:dot]
+            base = kun[0:dot]
+            kuns[idx] = base
+
+            lastchar = kun[-1]
+            if re.match(i_class, lastchar):
+                kuns.append(kun.replace('.', ''))
+            elif re.match(u_class, lastchar):
+                kun = kun[:-1] + u_to_i[lastchar]
+                kuns.append(kun.replace('.', ''))
 
     # should we use this information (bound readings) somehow?
     kuns = [kun.replace('-', '') for kun in kuns]
