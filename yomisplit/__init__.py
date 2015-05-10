@@ -2,7 +2,8 @@
 
 TODO:
     - suport for Unicode composing.
-    - we overshoot a bit; okurigana won't filter for kunyomi (so that e.g. にゅうり will match 入り)
+    - we overshoot a bit; okurigana won't filter for kunyomi (so that e.g. にゅうり will match 入り).
+    We also don't test the next charager when trying for sokuon, e.g. こく.か → こっか.
 '''
 
 import re
@@ -72,7 +73,7 @@ def japanese_matchreg(hiragana):
     if len(hiragana) > 1:
         last = hiragana[-1]
         # sokuon processing
-        if last in ['つ', 'ち']:
+        if last in ['つ', 'ち', 'く']:
             matchreg += '[%sっ]?' % last
         else:
             matchreg += last
