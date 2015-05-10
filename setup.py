@@ -23,7 +23,7 @@ setup(
     # PEP440
     version='0.0.1',
 
-    description='split Japanese kanji string by readings',
+    description='Split Japanese kanji string by readings',
     long_description=long_description,
 
     url='https://github.com/leoboiko/yomisplit',
