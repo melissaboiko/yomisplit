@@ -152,7 +152,12 @@ def yomi_matchreg(kanjistring):
             count[ch] = 1
             groupname = ch
 
-        matchreg += '(?P<%s>%s)' % (groupname, reg)
+        if re.match("(\W|\d)$", ch):
+            # non-'alphabetic' chars (i.e. punctuation, digits) can't be groupname
+            matchreg += '(%s)' % reg
+        else:
+            # matches kanji, kana
+            matchreg += '(?P<%s>%s)' % (groupname, reg)
 
         prev = ch
         prevreg = reg
