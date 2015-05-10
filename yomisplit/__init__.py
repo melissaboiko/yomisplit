@@ -7,6 +7,19 @@ import re
 
 from yomisplit.yomi import ONYOMI, KUNYOMI
 
+class UnknownKanji(ValueError):
+    def __init__(self, kanji):
+        self.kanji = kanji
+    def __str__(self):
+        return("Readings for kanji '%s' are not known to library." % self.kanji)
+
+class UnknownReading(ValueError):
+    def __init__(self, kanji, reading):
+        self.kanji = kanji
+        self.reading = reading
+    def __str__(self):
+        return("Reading '%s' for kanji '%s' is not known to library." % (self.reading, self.kanji))
+
 '''Japanese 'voicing' or daku transformations classes, including the /h/ sounds
 (which changes to /b/) and the 'half-daku' (/h/ -> /p/).'''
 DAKUON = {
@@ -103,7 +116,7 @@ def yomi_matchreg(kanjistring):
             kunregs = [japanese_matchreg(kun) for kun in KUNYOMI[kanji]]
             matchreg += '|'.join(kunregs)
         if not found:
-            raise(ValueError("No reading found for kanji: '%s'" % kanji))
+            raise(UnknownKanji(kanji))
 
         matchreg += ')'
     return matchreg
@@ -126,17 +139,15 @@ def canonical_reading(kanji, foundreading):
             if japanese_match(creading, foundreading):
                 return(creading, 'Kun')
     else:
-        raise(ValueError("Kanji not found: %s" % kanji))
+        raise(UnknownKanji(kanji))
 
-    raise(ValueError("Reading '%s' not found for kanji %s" %
-                     (foundreading, kanji))) 
+    raise(UnknownReading(kanji, foundreading))
 
 
 def yomidict(kanji, reading):
     m = re.match(yomi_matchreg(kanji), reading)
     if (not m):
-        raise(ValueError("Reading '%s' not found for kanji '%s'" %
-                         (reading, kanji)))
+        raise(UnknownReading(kanji, reading))
     return(m.groupdict())
 
 def yomisplit(kanjiword, reading):
