@@ -100,25 +100,29 @@ def yomi_matchreg(kanjistring):
     will include named groups, one for each kanji.
     """
     matchreg = ''
-    for kanji in kanjistring:
-        matchreg += '(?P<%s>' % kanji
+    for ch in kanjistring:
 
-        found=False
-        if kanji in ONYOMI.keys():
+        found = False
+        regs = []
+
+        if ch in ONYOMI.keys():
             found=True
-            onregs = [japanese_matchreg(on) for on in ONYOMI[kanji]]
-            matchreg += '|'.join(onregs)
-        if kanji in KUNYOMI.keys():
-            if found:
-                matchreg += '|'
-            else:
-                found=True
-            kunregs = [japanese_matchreg(kun) for kun in KUNYOMI[kanji]]
-            matchreg += '|'.join(kunregs)
-        if not found:
-            raise(UnknownKanji(kanji))
+            regs += [japanese_matchreg(on) for on in ONYOMI[ch]]
 
-        matchreg += ')'
+        if ch in KUNYOMI.keys():
+            found=True
+
+            regs += [japanese_matchreg(kun) for kun in KUNYOMI[ch]]
+
+        if found:
+          matchreg += '(?P<%s>' % ch
+          matchreg += '|'.join(regs)
+          matchreg += ')'
+        else:
+            # assumes character is okurigana; must match as-is
+            matchreg += ch
+
+            # raise(UnknownKanji(ch))
     return matchreg
 
 def canonical_reading(kanji, foundreading):
