@@ -63,6 +63,9 @@ def japanese_matchreg(hiragana):
     
     That is, it adds 'dakuten, 'handakuten, and small-tsu', so that:
         (TODO: doctest)
+
+    Note: it doesn't anchor for start and end of string, so unless you do, it
+    will match substrings.
         
     '''
     matchreg = ''
@@ -97,7 +100,7 @@ def japanese_match(hiragana1, hiragana2):
 
     Wrapper on japanese_matchreg.
     '''
-    matchreg = japanese_matchreg(hiragana1)
+    matchreg = '^' + japanese_matchreg(hiragana1) + '$'
     return(re.match(matchreg, hiragana2))
             
 
