@@ -144,7 +144,7 @@ def yomi_matchreg(kanjistring):
         if found:
             reg = '|'.join(yomis)
         elif ch == '々':
-            if prev:
+            if prevch:
                 reg = prevreg
             else:
                 raise(ValueError('Repetition character 々 following nothing'))
@@ -167,7 +167,7 @@ def yomi_matchreg(kanjistring):
             # matches kanji, kana
             matchreg += '(?P<%s>%s)' % (groupname, reg)
 
-        prev = ch
+        prevch = ch
         prevreg = reg
 
     matchreg += '$'
