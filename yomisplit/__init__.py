@@ -100,8 +100,9 @@ def japanese_match(hiragana1, hiragana2):
 
     Wrapper on japanese_matchreg.
     '''
-    matchreg = '^' + japanese_matchreg(hiragana1) + '$'
-    return(re.match(matchreg, hiragana2))
+
+    reg = re.compile('^' + japanese_matchreg(hiragana1) + '$')
+    return(reg.match(hiragana2))
             
 
 def yomi_matchreg(kanjistring):
@@ -172,7 +173,7 @@ def yomi_matchreg(kanjistring):
         prevreg = reg
 
     matchreg += '$'
-    return matchreg
+    return(re.compile(matchreg))
 
 def canonical_reading(kanji, foundreading):
     """From a found reading for a kanji, find its canonical form and type.
