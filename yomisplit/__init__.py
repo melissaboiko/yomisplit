@@ -130,18 +130,19 @@ def yomi_matchreg(kanjistring):
 
     for ch in kanjistring:
 
-        found = False
+        yomis = []
         yomis = []
 
         if ch in ONYOMI.keys():
-            found=True
-            yomis += [japanese_matchreg(on) for on in ONYOMI[ch]]
+            yomis += ONYOMI[ch]
 
         if ch in KUNYOMI.keys():
-            found=True
-            yomis += [japanese_matchreg(kun) for kun in KUNYOMI[ch]]
+            yomis += KUNYOMI[ch]
 
-        if found:
+        if yomis:
+            # heuristic to prefer longer matches
+            yomis.sort(key=len, reverse=True)
+            yomis = [japanese_matchreg(y) for y in yomis]
             reg = '|'.join(yomis)
         elif ch == '々':
             if prevch:
