@@ -9,6 +9,7 @@ TODO:
 import re
 
 from yomisplit.yomi import ONYOMI, KUNYOMI
+from yomisplit.joyokanji import JOYO_ONYOMI, JOYO_KUNYOMI
 
 class UnknownKanji(ValueError):
     def __init__(self, kanji):
@@ -203,6 +204,17 @@ def yomidict(kanji, reading):
     if (not m):
         raise(UnknownReading(kanji, reading))
     return(m.groupdict())
+
+# returns True if reading is found in joyo tables
+def is_joyo(kanji, reading):
+    if kanji in JOYO_ONYOMI:
+        if reading in JOYO_ONYOMI[kanji]:
+            return True
+    elif kanji in JOYO_KUNYOMI:
+        if reading in JOYO_KUNYOMI[kanji]:
+            return True
+
+    return False
 
 def yomisplit(kanjiword, reading):
     pass
