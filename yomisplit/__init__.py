@@ -205,6 +205,16 @@ def yomidict(kanji, reading):
         raise(UnknownReading(kanji, reading))
     return(m.groupdict())
 
+i_to_u = {
+    'い': 'う',
+    'き': 'く',
+    'し': 'す',
+    'ち': 'つ',
+    'に': 'ぬ',
+    'ひ': 'ふ',
+    'み': 'む',
+    'り': 'る',
+}
 # returns True if reading is found in joyo tables
 def is_joyo(kanji, reading):
     if kanji in JOYO_ONYOMI:
@@ -213,6 +223,10 @@ def is_joyo(kanji, reading):
     if kanji in JOYO_KUNYOMI:
         if reading in JOYO_KUNYOMI[kanji]:
             return True
+        elif reading[-1] in 'いきしちにひみり':
+            reading = reading[:-1] + i_to_u[reading[-1]]
+            if reading in JOYO_KUNYOMI[kanji]:
+                return True
         else:
             # needed because joyo table has no information about okurigana
             # boundaries
