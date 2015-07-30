@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import jctconv
+from yomisplit.joyokanji import JOYO_ONYOMI, JOYO_KUNYOMI
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -37,7 +38,7 @@ for line in onyomi_tsv:
     # should we use this information (bound readings) somehow?
     ons = [on.replace('-', '') for on in ons]
     ons = [on.strip() for on in ons]
-    ons = set(ons)
+    ons = list(set(ons))
     onyomis[kanji] = ons
 
 kunyomis = {}
@@ -89,8 +90,23 @@ for line in kunyomi_tsv:
     # should we use this information (bound readings) somehow?
     kuns = [kun.replace('-', '') for kun in kuns]
     kuns = [kun.strip() for kun in kuns]
-    kuns = set(kuns)
+    kuns = list(set(kuns))
     kunyomis[kanji] = kuns
+
+# prefer joyo readings
+for kanji in onyomis:
+    if kanji in JOYO_ONYOMI:
+        for reading in onyomis[kanji]:
+            if reading in JOYO_ONYOMI[kanji]:
+                onyomis[kanji].remove(reading)
+                onyomis[kanji].insert(0,reading)
+
+for kanji in onyomis:
+    if kanji in JOYO_KUNYOMI:
+        for reading in kunyomis[kanji]:
+            if reading in JOYO_KUNYOMI[kanji]:
+                kunyomis[kanji].remove(reading)
+                kunyomis[kanji].insert(0,reading)
 
 print('ONYOMI = ' + repr(onyomis))
 print('KUNYOMI = ' + repr(kunyomis))
