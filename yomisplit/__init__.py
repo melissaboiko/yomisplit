@@ -213,6 +213,12 @@ def is_joyo(kanji, reading):
     if kanji in JOYO_KUNYOMI:
         if reading in JOYO_KUNYOMI[kanji]:
             return True
+        else:
+            # needed because joyo table has no information about okurigana
+            # boundaries
+            for kun in JOYO_KUNYOMI[kanji]:
+                if kun.startswith(reading):
+                    return(True)
 
     return False
 
