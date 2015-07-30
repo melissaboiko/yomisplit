@@ -210,7 +210,7 @@ def is_joyo(kanji, reading):
     if kanji in JOYO_ONYOMI:
         if reading in JOYO_ONYOMI[kanji]:
             return True
-    elif kanji in JOYO_KUNYOMI:
+    if kanji in JOYO_KUNYOMI:
         if reading in JOYO_KUNYOMI[kanji]:
             return True
 
