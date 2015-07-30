@@ -6,7 +6,7 @@ TODO:
     We also don't test the next charager when trying for sokuon, e.g. こく.か → こっか.
 '''
 
-import re
+import regex as re
 
 from yomisplit.yomi import ONYOMI, KUNYOMI
 from yomisplit.joyokanji import JOYO_ONYOMI, JOYO_KUNYOMI
@@ -221,6 +221,33 @@ def is_joyo(kanji, reading):
                     return(True)
 
     return False
+
+kanji_re = re.compile("\p{Han}")
+def guess_split(majiribun, reading):
+    kanjis=[]
+    matchreg_greedy=''
+    matchreg_nongreedy=''
+    for char in majiribun:
+        if kanji_re.match(char):
+            kanjis.append(char)
+            matchreg_greedy += "(\p{Hiragana}+)"
+            matchreg_nongreedy += "(\p{Hiragana}+?)"
+        else:
+            matchreg_greedy += re.escape(char)
+            matchreg_nongreedy += re.escape(char)
+
+    m = re.match(matchreg_greedy + '$', reading)
+    if m:
+        yomis = m.groups()
+
+        yomis_nongreedy = re.match(matchreg_nongreedy + '$', reading).groups()
+        if yomis != yomis_nongreedy:
+            # Ambiguous!
+            return None
+        d = {}
+        for idx in range(0, len(kanjis)):
+            d[kanjis[idx]] = yomis[idx]
+        return(d)
 
 def yomisplit(kanjiword, reading):
     pass
