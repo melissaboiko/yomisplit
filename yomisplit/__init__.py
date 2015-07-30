@@ -223,11 +223,12 @@ def is_joyo(kanji, reading):
     if kanji in JOYO_KUNYOMI:
         if reading in JOYO_KUNYOMI[kanji]:
             return True
-        elif reading[-1] in 'いきしちにひみり':
-            reading = reading[:-1] + i_to_u[reading[-1]]
-            if reading in JOYO_KUNYOMI[kanji]:
-                return True
         else:
+            if len(reading) > 1 and reading[-1] in 'いきしちにひみり':
+                ureading = reading[:-1] + i_to_u[reading[-1]]
+                if ureading in JOYO_KUNYOMI[kanji]:
+                    return True
+
             # needed because joyo table has no information about okurigana
             # boundaries
             for kun in JOYO_KUNYOMI[kanji]:
